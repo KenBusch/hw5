@@ -19,6 +19,22 @@ window.addEventListener('DOMContentLoaded', async function() {
       // - Get the user-entered location from the element's value
       let days = daysInput.value
 
+      //Declaring some variables now for a totally optional feature later
+      let dayForecastTitle
+      if (days == 1) {
+        dayForecastTitle = ``
+      } else if (days == 2) {
+        dayForecastTitle = ``
+      } else if (days == 3) {
+        dayForecastTitle = ``
+      } else if (days == 0) {
+        dayForecastTitle = `...Not much of a forecast if you want zero days eh?... Here's today anyway!`
+      } else if (days < 0 ) {
+        dayForecastTitle = `....You can't have a negative day forecast!... because that would be historical data as opposed to a forecast now wouldn't it? Enjoy Today's Weather Instead!`
+      } else {
+        dayForecastTitle = `...Sorry! Only up to 3 Days with the free API! What? Do you think I'm some sort of meteorologist?`
+      }
+
       // - Check to see if the user entered anything; if so:
       if (location.length > 0) {
         // - Construct a URL to call the WeatherAPI.com API
@@ -36,8 +52,7 @@ window.addEventListener('DOMContentLoaded', async function() {
         // - Store the returned location, current weather conditions, the forecast as three separate variables
         let interpretedLocation = json.location
         let currentWeather = json.current
-        let dailyForecast = json.forecast
-  
+        
         // Store a reference to the "current" element
         let currentElement = document.querySelector(`.current`)
   
@@ -53,35 +68,37 @@ window.addEventListener('DOMContentLoaded', async function() {
             </div>
           </div>
         `
-        // Store a reference to the "current" element
+        //Store a reference to the "current" element
         let forecastElement = document.querySelector(`.forecast`)
-  
-        // Fill the forecast element with the forecasted weather conditions
-       forecastElement.innerHTML = `
+
+        //Fill the forecast element with forecast day title
+        forecastElement.innerHTML = `
         <div class="text-center space-y-8">
-        <div class="font-bold text-3xl">${days} Day Forecast</div>
-
-        <div>
-          <img src="https:${dailyForecast.forecastday[0].day.condition.icon}" class="mx-auto">
-          <h1 class="text-2xl text-bold text-gray-500">${dailyForecast.forecastday[0].date}</h1>
-          <h2 class="text-xl">High ${dailyForecast.forecastday[0].day.maxtemp_f}° – Low ${dailyForecast.forecastday[0].day.mintemp_f}°</h2>
-          <p class="text-gray-500">${dailyForecast.forecastday[0].day.condition.text}</h1>
-        </div>
-
-        <div>
-          <img src="https:${dailyForecast.forecastday[1].day.condition.icon}" class="mx-auto">
-          <h1 class="text-2xl text-bold text-gray-500">${dailyForecast.forecastday[1].date}</h1>
-          <h2 class="text-xl">High ${dailyForecast.forecastday[1].day.maxtemp_f}° – Low ${dailyForecast.forecastday[1].day.mintemp_f}°</h2>
-          <p class="text-gray-500">${dailyForecast.forecastday[1].day.condition.text}</h1>
-        </div>
-
-        <div>
-          <img src="https:${dailyForecast.forecastday[2].day.condition.icon}" class="mx-auto">
-          <h1 class="text-2xl text-bold text-gray-500">${dailyForecast.forecastday[2].date}</h1>
-          <h2 class="text-xl">High ${dailyForecast.forecastday[2].day.maxtemp_f}° – Low ${dailyForecast.forecastday[2].day.mintemp_f}°</h2>
-          <p class="text-gray-500">${dailyForecast.forecastday[2].day.condition.text}</h1>
-        </div>
+        <div class="font-bold text-3xl">${days} Day Forecast ${dayForecastTitle}</div>
         `
-      }
+        //Create for loop to loop through daily forcast data
+        for (let i=0; i < json.forecast.forecastday.length; i++){
+
+        //Declare variable for daily forecast Icon
+        let dailyForecastIcon = json.forecast.forecastday[i].day.condition.icon
+        //Declare variable for daily forecast Date
+        let dailyForecastDate = json.forecast.forecastday[i].date
+        //Declare variable for daily forecast Max Temp
+        let dailyForecastMaxTemp = json.forecast.forecastday[i].day.maxtemp_f
+        //Declare variable for daily forecast Min Temp
+        let dailyForecastMinTemp = json.forecast.forecastday[i].day.mintemp_f
+        //Declare variable for daily forecast Text
+        let dailyForecastText = json.forecast.forecastday[i].day.condition.text
+
+        //Fill the forecast element with the forecasted weather conditions
+        forecastElement.insertAdjacentHTML(`beforeend`,`
+        <div class = text-center>
+          <img src="https:${dailyForecastIcon}" class="mx-auto">
+          <h1 class="text-2xl text-bold text-gray-500">${dailyForecastDate}</h1>
+          <h2 class="text-xl">High ${dailyForecastMaxTemp}° – Low ${dailyForecastMinTemp}°</h2>
+          <p class="text-gray-500">${dailyForecastText}</h1>
+        </div>
+        `)
+      }}
     })
   })
